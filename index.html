@@ -1,0 +1,2282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🎓 Smart Student Portal — Academic Dashboard</title>
+
+  <!-- Google Fonts: Inter & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Bootstrap 5.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+
+  <style>
+    :root {
+      --primary-blue: #2563EB;
+      --primary-blue-dark: #1E40AF;
+      --primary-purple: #7C3AED;
+      --primary-purple-dark: #6D28D9;
+      --bg-slate: #F8FAFC;
+      --surface-white: #FFFFFF;
+      --text-main: #0F172A;
+      --text-muted: #64748B;
+      --border-light: #E2E8F0;
+      --sidebar-width: 268px;
+      --header-height: 72px;
+      --card-radius: 16px;
+      --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-slate);
+      color: var(--text-main);
+      overflow-x: hidden;
+      margin: 0;
+    }
+
+    h1, h2, h3, h4, h5, h6, .brand-font {
+      font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+    }
+
+    /* Compact View Toggle Support */
+    body.compact-mode .portal-card {
+      padding: 1rem !important;
+    }
+    body.compact-mode .table > :not(caption) > * > * {
+      padding: 0.5rem 0.75rem;
+    }
+
+    /* Gradient Utilities */
+    .bg-brand-gradient {
+      background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-purple) 100%);
+    }
+    .bg-brand-soft {
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.08) 0%, rgba(124, 58, 237, 0.08) 100%);
+    }
+    .text-brand-gradient {
+      background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-purple) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Sidebar Layout */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: var(--sidebar-width);
+      height: 100vh;
+      background: var(--surface-white);
+      border-right: 1px solid var(--border-light);
+      z-index: 1040;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar-brand {
+      height: var(--header-height);
+      padding: 0 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .brand-logo-box {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary-blue), var(--primary-purple));
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      box-shadow: 0 6px 14px rgba(37, 99, 235, 0.25);
+      flex-shrink: 0;
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem 0.875rem;
+    }
+
+    .sidebar-nav::-webkit-scrollbar {
+      width: 5px;
+    }
+    .sidebar-nav::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 10px;
+    }
+
+    .nav-section-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #94A3B8;
+      padding: 0.5rem 0.85rem;
+      margin-top: 0.5rem;
+    }
+
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.72rem 0.95rem;
+      margin-bottom: 0.25rem;
+      border-radius: 12px;
+      color: #475569;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.925rem;
+      transition: var(--transition-smooth);
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      width: 100%;
+      text-align: left;
+    }
+
+    .sidebar-link .link-left {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .sidebar-link i {
+      font-size: 1.15rem;
+      transition: var(--transition-smooth);
+    }
+
+    .sidebar-link:hover {
+      background-color: #F1F5F9;
+      color: var(--primary-blue);
+      transform: translateX(3px);
+    }
+
+    .sidebar-link.active {
+      background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-purple) 100%);
+      color: #FFFFFF;
+      font-weight: 600;
+      box-shadow: 0 8px 18px -4px rgba(37, 99, 235, 0.35);
+    }
+
+    .sidebar-link.active i {
+      color: #FFFFFF;
+    }
+
+    .sidebar-link.logout-link {
+      color: #EF4444;
+    }
+    .sidebar-link.logout-link:hover {
+      background-color: #FEF2F2;
+      color: #DC2626;
+    }
+
+    /* Main Wrapper */
+    .main-wrapper {
+      margin-left: var(--sidebar-width);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: margin-left 0.3s ease;
+    }
+
+    /* Top Header */
+    .top-header {
+      height: var(--header-height);
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-light);
+      position: sticky;
+      top: 0;
+      z-index: 1020;
+      padding: 0 1.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .search-wrapper {
+      position: relative;
+      max-width: 420px;
+      width: 100%;
+    }
+
+    .search-input {
+      background-color: #F1F5F9;
+      border: 1px solid transparent;
+      border-radius: 12px;
+      padding: 0.58rem 1rem 0.58rem 2.6rem;
+      font-size: 0.9rem;
+      transition: var(--transition-smooth);
+    }
+
+    .search-input:focus {
+      background-color: #FFFFFF;
+      border-color: var(--primary-blue);
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+      outline: none;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 0.95rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #64748B;
+    }
+
+    .search-results-dropdown {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      right: 0;
+      background: #FFFFFF;
+      border: 1px solid var(--border-light);
+      border-radius: 14px;
+      box-shadow: 0 16px 36px rgba(15, 23, 42, 0.12);
+      z-index: 1050;
+      max-height: 360px;
+      overflow-y: auto;
+      display: none;
+    }
+
+    .search-results-dropdown.show {
+      display: block;
+    }
+
+    .search-result-item {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid #F1F5F9;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+    .search-result-item:last-child {
+      border-bottom: none;
+    }
+    .search-result-item:hover {
+      background: #F8FAFC;
+    }
+
+    /* Portal Cards */
+    .portal-card {
+      background: var(--surface-white);
+      border: 1px solid var(--border-light);
+      border-radius: var(--card-radius);
+      padding: 1.4rem;
+      box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
+      transition: var(--transition-smooth);
+    }
+
+    .portal-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 24px -8px rgba(15, 23, 42, 0.08);
+    }
+
+    .kpi-card {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .kpi-icon-box {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.35rem;
+      flex-shrink: 0;
+    }
+
+    /* Content Sections Transition */
+    .content-section {
+      display: none;
+      animation: fadeInSlide 0.3s ease forwards;
+    }
+    .content-section.active {
+      display: block;
+    }
+
+    @keyframes fadeInSlide {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Progress Bars */
+    .progress-modern {
+      height: 9px;
+      border-radius: 999px;
+      background-color: #E2E8F0;
+      overflow: hidden;
+    }
+
+    /* Timetable Styling */
+    .timetable-table th {
+      background-color: #F8FAFC;
+      color: #475569;
+      font-weight: 700;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      border-bottom: 2px solid var(--border-light);
+      white-space: nowrap;
+    }
+
+    .timetable-row-today {
+      background: linear-gradient(90deg, rgba(37, 99, 235, 0.08) 0%, rgba(124, 58, 237, 0.08) 100%) !important;
+      border-left: 4px solid var(--primary-purple);
+    }
+
+    .timetable-slot {
+      border-radius: 10px;
+      padding: 0.55rem 0.7rem;
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      min-width: 145px;
+      transition: var(--transition-smooth);
+    }
+    .timetable-row-today .timetable-slot {
+      background: #FFFFFF;
+      border-color: rgba(124, 58, 237, 0.25);
+      box-shadow: 0 3px 10px rgba(124, 58, 237, 0.06);
+    }
+
+    /* Notifications & Announcements */
+    .notif-item {
+      border-radius: 14px;
+      border: 1px solid var(--border-light);
+      padding: 1rem 1.15rem;
+      transition: var(--transition-smooth);
+      cursor: pointer;
+      background: #FFFFFF;
+    }
+    .notif-item:hover {
+      border-color: var(--primary-blue);
+      background: #F8FAFC;
+    }
+    .notif-item.unread {
+      border-left: 4px solid var(--primary-blue);
+      background: rgba(37, 99, 235, 0.03);
+    }
+
+    /* Buttons */
+    .btn-brand {
+      background: linear-gradient(135deg, var(--primary-blue), var(--primary-purple));
+      color: #FFFFFF;
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      padding: 0.55rem 1.15rem;
+      transition: var(--transition-smooth);
+    }
+    .btn-brand:hover {
+      color: #FFFFFF;
+      opacity: 0.94;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+    }
+
+    /* Mobile Backdrop */
+    .sidebar-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.45);
+      backdrop-filter: blur(2px);
+      z-index: 1035;
+    }
+    .sidebar-backdrop.show {
+      display: block;
+    }
+
+    /* Responsive Breakpoints */
+    @media (max-width: 991.98px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .main-wrapper {
+        margin-left: 0;
+      }
+      .top-header {
+        padding: 0 1rem;
+      }
+    }
+
+    @media (max-width: 575.98px) {
+      .portal-card {
+        padding: 1.1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Mobile Sidebar Backdrop -->
+  <div id="sidebarBackdrop" class="sidebar-backdrop"></div>
+
+  <!-- Sidebar Navigation -->
+  <aside id="sidebar" class="sidebar" aria-label="Student Portal Navigation">
+    <div class="sidebar-brand">
+      <div class="brand-logo-box">
+        <i class="bi bi-mortarboard-fill"></i>
+      </div>
+      <div>
+        <div class="fw-bold fs-6 text-dark lh-sm brand-font">Smart Student</div>
+        <small class="text-primary fw-semibold" style="font-size: 0.72rem;">University Portal</small>
+      </div>
+      <button id="closeSidebarBtn" class="btn btn-sm btn-light ms-auto d-lg-none" aria-label="Close Sidebar">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <div class="sidebar-nav">
+      <div class="nav-section-label">Main Menu</div>
+      <button class="sidebar-link active" data-target="dashboard">
+        <span class="link-left"><i class="bi bi-grid-1x2-fill"></i> Dashboard</span>
+      </button>
+      <button class="sidebar-link" data-target="profile">
+        <span class="link-left"><i class="bi bi-person-badge-fill"></i> My Profile</span>
+      </button>
+      <button class="sidebar-link" data-target="attendance">
+        <span class="link-left"><i class="bi bi-calendar2-check-fill"></i> Attendance</span>
+        <span class="badge rounded-pill bg-success-subtle text-success fw-semibold" style="font-size: 0.7rem;">86.5%</span>
+      </button>
+      <button class="sidebar-link" data-target="marks">
+        <span class="link-left"><i class="bi bi-bar-chart-line-fill"></i> Marks &amp; Results</span>
+      </button>
+      <button class="sidebar-link" data-target="timetable">
+        <span class="link-left"><i class="bi bi-clock-history"></i> Timetable</span>
+      </button>
+      <button class="sidebar-link" data-target="subjects">
+        <span class="link-left"><i class="bi bi-book-half"></i> My Subjects</span>
+        <span class="badge rounded-pill bg-primary-subtle text-primary fw-semibold" style="font-size: 0.7rem;">6</span>
+      </button>
+
+      <div class="nav-section-label mt-3">Campus &amp; Updates</div>
+      <button class="sidebar-link" data-target="notifications">
+        <span class="link-left"><i class="bi bi-bell-fill"></i> Notifications</span>
+        <span id="sidebarNotifBadge" class="badge rounded-pill bg-danger text-white" style="font-size: 0.7rem;">4</span>
+      </button>
+      <button class="sidebar-link" data-target="announcements">
+        <span class="link-left"><i class="bi bi-megaphone-fill"></i> Announcements</span>
+      </button>
+
+      <div class="nav-section-label mt-3">Account</div>
+      <button class="sidebar-link" data-target="settings">
+        <span class="link-left"><i class="bi bi-gear-fill"></i> Settings</span>
+      </button>
+      <button class="sidebar-link logout-link" data-bs-toggle="modal" data-bs-target="#logoutModal">
+        <span class="link-left"><i class="bi bi-box-arrow-right"></i> Logout</span>
+      </button>
+    </div>
+
+    <!-- Bottom Semester Status Pill -->
+    <div class="p-3 border-top">
+      <div class="p-3 rounded-4 bg-brand-soft border border-primary-subtle">
+        <div class="d-flex align-items-center justify-content-between mb-1">
+          <span class="badge bg-primary rounded-pill">Sem 5 • 2026</span>
+          <small class="text-muted fw-semibold">Week 14</small>
+        </div>
+        <div class="small fw-bold text-dark mt-1">B.Tech CSE</div>
+        <div class="text-muted" style="font-size: 0.75rem;">End-Sem Exams in 18 days</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content Area -->
+  <div class="main-wrapper">
+    <!-- Top Header Bar -->
+    <header class="top-header">
+      <div class="d-flex align-items-center gap-3 flex-grow-1">
+        <button id="openSidebarBtn" class="btn btn-light border d-lg-none" aria-label="Open Navigation">
+          <i class="bi bi-list fs-5"></i>
+        </button>
+
+        <!-- Global Search Bar -->
+        <div class="search-wrapper">
+          <i class="bi bi-search search-icon"></i>
+          <input
+            type="text"
+            id="globalSearchInput"
+            class="form-control search-input"
+            placeholder="Search subjects, faculty, notifications, notices..."
+            autocomplete="off"
+          />
+          <div id="searchResultsDropdown" class="search-results-dropdown"></div>
+        </div>
+      </div>
+
+      <div class="d-flex align-items-center gap-2 gap-md-3">
+        <!-- Current Date Pill (Desktop) -->
+        <div class="d-none d-xl-flex align-items-center gap-2 px-3 py-1.5 rounded-pill bg-light border text-muted small fw-medium">
+          <i class="bi bi-calendar3 text-primary"></i>
+          <span id="headerCurrentDate">Tuesday, Nov 24, 2026</span>
+        </div>
+
+        <!-- Notification Bell Dropdown -->
+        <div class="dropdown">
+          <button class="btn btn-light border rounded-circle position-relative p-2" style="width: 42px; height: 42px;" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Notifications">
+            <i class="bi bi-bell fs-6 text-dark"></i>
+            <span id="headerNotifBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem;">
+              4
+            </span>
+          </button>
+          <div class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 p-0 mt-2" style="width: 330px; max-width: 92vw;">
+            <div class="p-3 border-bottom d-flex justify-content-between align-items-center bg-brand-soft rounded-top-4">
+              <h6 class="mb-0 fw-bold">Notifications</h6>
+              <button class="btn btn-sm btn-link text-decoration-none p-0 fw-semibold" onclick="markAllNotificationsRead()">Mark all read</button>
+            </div>
+            <div id="headerNotifList" class="p-2" style="max-height: 280px; overflow-y: auto;"></div>
+            <div class="p-2 border-top text-center">
+              <button class="btn btn-sm btn-light w-100 fw-semibold text-primary" onclick="navigateTo('notifications')">
+                View All Notifications
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Student Profile Mini Avatar -->
+        <div class="d-flex align-items-center gap-2 ps-2 border-start cursor-pointer" style="cursor: pointer;" onclick="navigateTo('profile')">
+          <img
+            id="headerAvatarImg"
+            src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=150&q=80"
+            onerror="this.src='https://placehold.co/100x100/2563EB/FFFFFF?text=AS'"
+            alt="Arjun Sharma"
+            class="rounded-circle object-fit-cover border border-2 border-primary"
+            width="40"
+            height="40"
+          />
+          <div class="d-none d-md-block lh-sm">
+            <div id="headerStudentName" class="fw-bold small text-dark">Arjun Sharma</div>
+            <div class="text-muted" style="font-size: 0.72rem;">23CS1042 • Sem 5</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="container-fluid p-3 p-md-4 flex-grow-1">
+
+      <!-- =========================================================
+           1. DASHBOARD OVERVIEW SECTION
+           ========================================================= -->
+      <section id="section-dashboard" class="content-section active">
+        <!-- Welcome Hero Banner -->
+        <div class="portal-card bg-brand-gradient text-white border-0 mb-4 p-4 position-relative overflow-hidden">
+          <div class="row align-items-center">
+            <div class="col-lg-8">
+              <span class="badge bg-white text-primary fw-bold px-3 py-1.5 rounded-pill mb-2">
+                <i class="bi bi-stars me-1"></i> Academic Session 2026–27 • Odd Semester
+              </span>
+              <h2 class="fw-bold mb-1">Welcome back, <span id="heroStudentName">Arjun Sharma</span>! 👋</h2>
+              <p class="mb-0 opacity-90">
+                B.Tech Computer Science &amp; Engineering • 3rd Year (5th Semester) • National Institute of Technology
+              </p>
+            </div>
+            <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+              <button class="btn btn-light text-primary fw-bold rounded-3 me-2" onclick="navigateTo('timetable')">
+                <i class="bi bi-calendar-week me-1"></i> Today's Classes
+              </button>
+              <button class="btn btn-outline-light fw-semibold rounded-3" onclick="navigateTo('marks')">
+                <i class="bi bi-file-earmark-bar-graph me-1"></i> Report Card
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5 Summary KPI Cards -->
+        <div class="row g-3 mb-4">
+          <div class="col-12 col-sm-6 col-xl">
+            <div class="portal-card kpi-card h-100">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <span class="text-muted small fw-semibold">Total Subjects</span>
+                  <h3 class="fw-bold mb-1 mt-1">6</h3>
+                  <span class="badge bg-primary-subtle text-primary rounded-pill">22 Total Credits</span>
+                </div>
+                <div class="kpi-icon-box bg-primary-subtle text-primary">
+                  <i class="bi bi-journal-bookmark-fill"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-sm-6 col-xl">
+            <div class="portal-card kpi-card h-100">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <span class="text-muted small fw-semibold">Attendance Rate</span>
+                  <h3 class="fw-bold mb-1 mt-1">86.5%</h3>
+                  <span class="badge bg-success-subtle text-success rounded-pill"><i class="bi bi-arrow-up-short"></i> +1.8% this month</span>
+                </div>
+                <div class="kpi-icon-box bg-success-subtle text-success">
+                  <i class="bi bi-person-check-fill"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-sm-6 col-xl">
+            <div class="portal-card kpi-card h-100">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <span class="text-muted small fw-semibold">Average Marks</span>
+                  <h3 class="fw-bold mb-1 mt-1">84.2%</h3>
+                  <span class="badge bg-info-subtle text-info-emphasis rounded-pill">Top 8% in Batch</span>
+                </div>
+                <div class="kpi-icon-box" style="background: rgba(124, 58, 237, 0.12); color: #7C3AED;">
+                  <i class="bi bi-award-fill"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-sm-6 col-xl">
+            <div class="portal-card kpi-card h-100">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <span class="text-muted small fw-semibold">Upcoming Exams</span>
+                  <h3 class="fw-bold mb-1 mt-1">3</h3>
+                  <span class="badge bg-warning-subtle text-warning-emphasis rounded-pill">Starts Dec 12</span>
+                </div>
+                <div class="kpi-icon-box bg-warning-subtle text-warning">
+                  <i class="bi bi-calendar-event-fill"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-sm-12 col-xl">
+            <div class="portal-card kpi-card h-100">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <span class="text-muted small fw-semibold">Overall Performance</span>
+                  <h3 class="fw-bold mb-1 mt-1 text-brand-gradient">8.85 CGPA</h3>
+                  <span class="badge bg-success text-white rounded-pill">Excellent Standing</span>
+                </div>
+                <div class="kpi-icon-box bg-brand-gradient text-white">
+                  <i class="bi bi-graph-up-arrow"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactive Charts Row -->
+        <div class="row g-4 mb-4">
+          <div class="col-lg-8">
+            <div class="portal-card h-100">
+              <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+                <div>
+                  <h5 class="fw-bold mb-0">Subject-wise Academic Performance</h5>
+                  <small class="text-muted">Current Semester Assessment Score (out of 100)</small>
+                </div>
+                <button class="btn btn-sm btn-outline-primary rounded-pill" onclick="navigateTo('marks')">
+                  Detailed Breakdown <i class="bi bi-arrow-right ms-1"></i>
+                </button>
+              </div>
+              <div style="height: 290px;">
+                <canvas id="dashboardMarksChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-4">
+            <div class="portal-card h-100">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                  <h5 class="fw-bold mb-0">Attendance Distribution</h5>
+                  <small class="text-muted">Present vs Absent vs Medical Leave</small>
+                </div>
+              </div>
+              <div style="height: 225px;" class="d-flex align-items-center justify-content-center">
+                <canvas id="dashboardAttendanceChart"></canvas>
+              </div>
+              <div class="mt-3 pt-2 border-top d-flex justify-content-around text-center small">
+                <div>
+                  <div class="fw-bold text-primary">238</div>
+                  <div class="text-muted">Present</div>
+                </div>
+                <div>
+                  <div class="fw-bold text-danger">31</div>
+                  <div class="text-muted">Absent</div>
+                </div>
+                <div>
+                  <div class="fw-bold text-purple" style="color:#7C3AED;">6</div>
+                  <div class="text-muted">On-Duty</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Dashboard Widgets: Today's Schedule, Upcoming Exams, Recent Alerts -->
+        <div class="row g-4">
+          <!-- Today's Schedule Widget -->
+          <div class="col-lg-5">
+            <div class="portal-card h-100">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                  <h5 class="fw-bold mb-0">Today's Classes</h5>
+                  <small id="widgetTodayLabel" class="text-primary fw-semibold">Tuesday Schedule</small>
+                </div>
+                <button class="btn btn-sm btn-light border" onclick="navigateTo('timetable')">Full Week</button>
+              </div>
+              <div id="dashboardTodaySchedule" class="d-flex flex-column gap-2"></div>
+            </div>
+          </div>
+
+          <!-- Upcoming Exams Countdown -->
+          <div class="col-lg-3">
+            <div class="portal-card h-100">
+              <h5 class="fw-bold mb-1">Upcoming Exams</h5>
+              <small class="text-muted d-block mb-3">End-Semester Schedule</small>
+              <div class="d-flex flex-column gap-3">
+                <div class="p-3 rounded-3 bg-light border-start border-4 border-primary">
+                  <div class="d-flex justify-content-between small fw-bold text-primary">
+                    <span>CS301 • DAA</span>
+                    <span>In 18 Days</span>
+                  </div>
+                  <div class="fw-semibold small text-dark mt-1">Design &amp; Analysis of Algorithms</div>
+                  <div class="text-muted" style="font-size: 0.75rem;"><i class="bi bi-clock me-1"></i>Dec 12 • 09:30 AM • Hall A</div>
+                </div>
+
+                <div class="p-3 rounded-3 bg-light border-start border-4" style="border-color: #7C3AED !important;">
+                  <div class="d-flex justify-content-between small fw-bold" style="color: #7C3AED;">
+                    <span>CS302 • OS</span>
+                    <span>In 21 Days</span>
+                  </div>
+                  <div class="fw-semibold small text-dark mt-1">Operating Systems</div>
+                  <div class="text-muted" style="font-size: 0.75rem;"><i class="bi bi-clock me-1"></i>Dec 15 • 09:30 AM • Hall B</div>
+                </div>
+
+                <div class="p-3 rounded-3 bg-light border-start border-4 border-info">
+                  <div class="d-flex justify-content-between small fw-bold text-info-emphasis">
+                    <span>CS303 • DBMS</span>
+                    <span>In 24 Days</span>
+                  </div>
+                  <div class="fw-semibold small text-dark mt-1">Database Management Systems</div>
+                  <div class="text-muted" style="font-size: 0.75rem;"><i class="bi bi-clock me-1"></i>Dec 18 • 02:00 PM • Hall A</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Notifications Widget -->
+          <div class="col-lg-4">
+            <div class="portal-card h-100">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0">Recent Notifications</h5>
+                <button class="btn btn-sm btn-link text-decoration-none p-0 fw-semibold" onclick="navigateTo('notifications')">See All</button>
+              </div>
+              <div id="dashboardRecentNotifs" class="d-flex flex-column gap-2"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================================================
+           2. MY PROFILE SECTION
+           ========================================================= -->
+      <section id="section-profile" class="content-section">
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+          <div>
+            <h3 class="fw-bold mb-0">My Student Profile</h3>
+            <p class="text-muted mb-0 small">Official university registration &amp; personal academic record</p>
+          </div>
+          <button class="btn btn-brand" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+            <i class="bi bi-pencil-square me-1"></i> Edit Profile Details
+          </button>
+        </div>
+
+        <div class="row g-4">
+          <!-- Left Identity Card -->
+          <div class="col-lg-4">
+            <div class="portal-card text-center h-100">
+              <div class="position-relative d-inline-block mb-3">
+                <img
+                  id="profilePhotoImg"
+                  src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=300&q=80"
+                  onerror="this.src='https://placehold.co/200x200/2563EB/FFFFFF?text=AS'"
+                  alt="Student Photo"
+                  class="rounded-circle object-fit-cover border border-4 border-primary-subtle shadow"
+                  width="132"
+                  height="132"
+                />
+                <span class="position-absolute bottom-0 end-0 badge rounded-pill bg-success border border-2 border-white px-2 py-1">
+                  Active
+                </span>
+              </div>
+              <h4 id="profNameDisplay" class="fw-bold mb-1">Arjun Sharma</h4>
+              <p id="profRollDisplay" class="text-primary fw-semibold mb-2">Roll No: 23CS1042</p>
+              <span class="badge bg-brand-soft text-primary border border-primary-subtle px-3 py-2 rounded-pill mb-3">
+                B.Tech • Computer Science &amp; Engineering
+              </span>
+
+              <div class="border-top pt-3 mt-2 text-start small">
+                <div class="d-flex justify-content-between py-2 border-bottom">
+                  <span class="text-muted">Academic Status</span>
+                  <span class="fw-semibold text-success">Regular (Good Standing)</span>
+                </div>
+                <div class="d-flex justify-content-between py-2 border-bottom">
+                  <span class="text-muted">Current CGPA</span>
+                  <span class="fw-bold text-dark">8.85 / 10.0</span>
+                </div>
+                <div class="d-flex justify-content-between py-2">
+                  <span class="text-muted">Hostel / Day Scholar</span>
+                  <span class="fw-semibold">Homi Bhabha Hostel • Room 314</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Detailed Info Card -->
+          <div class="col-lg-8">
+            <div class="portal-card h-100">
+              <h5 class="fw-bold mb-3 pb-2 border-bottom">Academic &amp; Contact Information</h5>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <div class="p-3 rounded-3 bg-light">
+                    <small class="text-muted d-block">Full Name</small>
+                    <span id="profFullName" class="fw-bold">Arjun Sharma</span>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="p-3 rounded-3 bg-light">
+                    <small class="text-muted d-block">Student ID / Roll Number</small>
+                    <span id="profRollNo" class="fw-bold">23CS1042</span>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="p-3 rounded-3 bg-light">
+                    <small class="text-muted d-block">Course &amp; Branch</small>
+                    <span id="profBranch" class="fw-bold">B.Tech — Computer Science &amp; Engineering</span>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="p-3 rounded-3 bg-light">
+                    <small class="text-muted d-block">Year &amp; Semester</small>
+                    <span id="profYearSem" class="fw-bold">3rd Year / 5th Semester</span>
+                  </div>
+                </div>
+                <div class="col-12">
+                  <div class="p-3 rounded-3 bg-light">
+                    <small class="text-muted d-block">College / University Name</small>
+                    <span id="profCollege" class="fw-bold">National Institute of Technology (NIT)</span>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="p-3 rounded-3 bg-light">
+                    <small class="text-muted d-block">Official Email Address</small>
+                    <span id="profEmail" class="fw-bold text-primary">arjun.sharma@nit-portal.edu.in</span>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="p-3 rounded-3 bg-light">
+                    <small class="text-muted d-block">Mobile Number</small>
+                    <span id="profPhone" class="fw-bold">+91 98765 43210</span>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="p-3 rounded-3 bg-light">
+                    <small class="text-muted d-block">Faculty Advisor</small>
+                    <span id="profAdvisor" class="fw-bold">Dr. Meenakshi Sundaram (Dept. of CSE)</span>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="p-3 rounded-3 bg-light">
+                    <small class="text-muted d-block">Blood Group &amp; DOB</small>
+                    <span id="profBloodDob" class="fw-bold">O+ Positive • 14 August 2005</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================================================
+           3. ATTENDANCE SECTION
+           ========================================================= -->
+      <section id="section-attendance" class="content-section">
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+          <div>
+            <h3 class="fw-bold mb-0">Attendance Tracker</h3>
+            <p class="text-muted mb-0 small">Minimum 75% attendance is mandatory per university regulations</p>
+          </div>
+          <div class="btn-group" role="group" aria-label="Attendance Filter">
+            <button type="button" class="btn btn-primary btn-sm active" onclick="filterAttendance('all', this)">All Subjects (6)</button>
+            <button type="button" class="btn btn-outline-primary btn-sm" onclick="filterAttendance('safe', this)">Safe (&ge; 75%)</button>
+            <button type="button" class="btn btn-outline-danger btn-sm" onclick="filterAttendance('low', this)">Shortage (&lt; 75%)</button>
+          </div>
+        </div>
+
+        <!-- Attendance Summary Banner -->
+        <div class="portal-card bg-brand-soft border-primary-subtle mb-4">
+          <div class="row align-items-center g-3">
+            <div class="col-md-7">
+              <h5 class="fw-bold text-dark mb-1">Aggregate Attendance: <span class="text-primary">86.5%</span> (238 / 275 Classes)</h5>
+              <p class="text-muted small mb-0">
+                You are comfortably above the 75% threshold overall. However, <strong>Computer Networks (CS304)</strong> is at <strong>72.7%</strong> — attend the next 3 classes to reach 75%.
+              </p>
+            </div>
+            <div class="col-md-5 text-md-end">
+              <div class="d-inline-flex gap-3 bg-white px-3 py-2 rounded-4 border shadow-sm">
+                <div class="text-center">
+                  <div class="fw-bold text-success fs-5">238</div>
+                  <small class="text-muted">Present</small>
+                </div>
+                <div class="vr"></div>
+                <div class="text-center">
+                  <div class="fw-bold text-danger fs-5">37</div>
+                  <small class="text-muted">Absent</small>
+                </div>
+                <div class="vr"></div>
+                <div class="text-center">
+                  <div class="fw-bold text-primary fs-5">275</div>
+                  <small class="text-muted">Total</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Subject-wise Attendance Cards -->
+        <div id="attendanceCardsContainer" class="row g-3"></div>
+      </section>
+
+      <!-- =========================================================
+           4. MARKS AND RESULTS SECTION
+           ========================================================= -->
+      <section id="section-marks" class="content-section">
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+          <div>
+            <h3 class="fw-bold mb-0">Marks &amp; Examination Results</h3>
+            <p class="text-muted mb-0 small">5th Semester Continuous Evaluation (Internal + Assignment + End Exam)</p>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-primary-subtle text-primary fs-6 px-3 py-2 rounded-pill">SGPA: 8.92</span>
+            <span class="badge bg-brand-gradient text-white fs-6 px-3 py-2 rounded-pill">CGPA: 8.85</span>
+          </div>
+        </div>
+
+        <!-- Marks Table -->
+        <div class="portal-card mb-4">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>Code</th>
+                  <th>Subject Name</th>
+                  <th class="text-center">Internal (30)</th>
+                  <th class="text-center">Assignment (20)</th>
+                  <th class="text-center">Exam (50)</th>
+                  <th class="text-center">Total (100)</th>
+                  <th class="text-center">Percentage</th>
+                  <th class="text-center">Grade</th>
+                </tr>
+              </thead>
+              <tbody id="marksTableBody"></tbody>
+              <tfoot class="table-light fw-bold">
+                <tr>
+                  <td colspan="2">Grand Total / Aggregate</td>
+                  <td class="text-center">156 / 180</td>
+                  <td class="text-center">107 / 120</td>
+                  <td class="text-center">242 / 300</td>
+                  <td class="text-center text-primary">505 / 600</td>
+                  <td class="text-center text-success">84.17%</td>
+                  <td class="text-center"><span class="badge bg-success">A+</span></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+
+        <!-- Marks Breakdown & Semester GPA Trend Charts -->
+        <div class="row g-4">
+          <div class="col-lg-7">
+            <div class="portal-card h-100">
+              <h5 class="fw-bold mb-1">Component-wise Marks Comparison</h5>
+              <small class="text-muted d-block mb-3">Internal vs Assignment vs End-Sem Exam Scores</small>
+              <div style="height: 280px;">
+                <canvas id="marksStackedChart"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-5">
+            <div class="portal-card h-100">
+              <h5 class="fw-bold mb-1">Semester SGPA Progression</h5>
+              <small class="text-muted d-block mb-3">Academic growth from Semester 1 to Semester 5</small>
+              <div style="height: 280px;">
+                <canvas id="sgpaTrendChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================================================
+           5. TIMETABLE SECTION
+           ========================================================= -->
+      <section id="section-timetable" class="content-section">
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+          <div>
+            <h3 class="fw-bold mb-0">Weekly Class Timetable</h3>
+            <p class="text-muted mb-0 small">Highlighted row indicates the active/selected day's schedule</p>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <label for="timetableDaySelect" class="small fw-semibold text-muted mb-0">Highlight Day:</label>
+            <select id="timetableDaySelect" class="form-select form-select-sm rounded-3" style="width: 165px;">
+              <option value="Monday">Monday</option>
+              <option value="Tuesday">Tuesday (Today)</option>
+              <option value="Wednesday">Wednesday</option>
+              <option value="Thursday">Thursday</option>
+              <option value="Friday">Friday</option>
+              <option value="Saturday">Saturday</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="portal-card">
+          <div class="table-responsive">
+            <table class="table table-bordered timetable-table align-middle mb-0">
+              <thead>
+                <tr>
+                  <th style="width: 125px;">Day</th>
+                  <th>09:00 - 10:00</th>
+                  <th>10:00 - 11:00</th>
+                  <th>11:15 - 12:15</th>
+                  <th>12:15 - 01:15</th>
+                  <th>02:00 - 04:00 (Lab / Tutorial)</th>
+                </tr>
+              </thead>
+              <tbody id="timetableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================================================
+           6. MY SUBJECTS SECTION
+           ========================================================= -->
+      <section id="section-subjects" class="content-section">
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+          <div>
+            <h3 class="fw-bold mb-0">Enrolled Subjects &amp; Study Materials</h3>
+            <p class="text-muted mb-0 small">Access lecture notes, syllabus PDFs, and previous year question banks</p>
+          </div>
+          <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill fw-semibold">
+            6 Core Subjects • 22 Credits
+          </span>
+        </div>
+
+        <div id="subjectsGridContainer" class="row g-4"></div>
+      </section>
+
+      <!-- =========================================================
+           7. NOTIFICATIONS SECTION
+           ========================================================= -->
+      <section id="section-notifications" class="content-section">
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+          <div>
+            <h3 class="fw-bold mb-0">Notifications &amp; Alerts</h3>
+            <p class="text-muted mb-0 small">Click any notification to view full details and mark it as read</p>
+          </div>
+          <div class="d-flex flex-wrap gap-2">
+            <div class="btn-group btn-group-sm" role="group">
+              <button class="btn btn-primary active" onclick="filterNotifications('all', this)">All</button>
+              <button class="btn btn-outline-primary" onclick="filterNotifications('Exam Reminder', this)">Exams</button>
+              <button class="btn btn-outline-primary" onclick="filterNotifications('Assignment Deadline', this)">Assignments</button>
+              <button class="btn btn-outline-primary" onclick="filterNotifications('Attendance Alert', this)">Attendance</button>
+            </div>
+            <button class="btn btn-sm btn-light border fw-semibold" onclick="markAllNotificationsRead()">
+              <i class="bi bi-check2-all me-1 text-primary"></i> Mark All Read
+            </button>
+          </div>
+        </div>
+
+        <div id="notificationsListContainer" class="d-flex flex-column gap-3"></div>
+      </section>
+
+      <!-- =========================================================
+           8. ANNOUNCEMENTS SECTION
+           ========================================================= -->
+      <section id="section-announcements" class="content-section">
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+          <div>
+            <h3 class="fw-bold mb-0">Campus Announcements &amp; Notice Board</h3>
+            <p class="text-muted mb-0 small">Stay updated on cultural fests, tech workshops, seminars, and exam circulars</p>
+          </div>
+          <div class="d-flex flex-wrap gap-1" id="announcementFilters">
+            <button class="btn btn-sm btn-primary rounded-pill active" onclick="filterAnnouncements('all', this)">All</button>
+            <button class="btn btn-sm btn-outline-primary rounded-pill" onclick="filterAnnouncements('Workshop', this)">Workshops</button>
+            <button class="btn btn-sm btn-outline-primary rounded-pill" onclick="filterAnnouncements('Cultural Event', this)">Cultural</button>
+            <button class="btn btn-sm btn-outline-primary rounded-pill" onclick="filterAnnouncements('Seminar', this)">Seminars</button>
+            <button class="btn btn-sm btn-outline-primary rounded-pill" onclick="filterAnnouncements('Examination Update', this)">Exams</button>
+            <button class="btn btn-sm btn-outline-primary rounded-pill" onclick="filterAnnouncements('Holiday', this)">Holidays</button>
+          </div>
+        </div>
+
+        <div id="announcementsGridContainer" class="row g-4"></div>
+      </section>
+
+      <!-- =========================================================
+           9. SETTINGS SECTION
+           ========================================================= -->
+      <section id="section-settings" class="content-section">
+        <div class="mb-4">
+          <h3 class="fw-bold mb-0">Portal Settings &amp; Preferences</h3>
+          <p class="text-muted mb-0 small">Customize your notification alerts, display density, and account security</p>
+        </div>
+
+        <div id="settingsAlertPlaceholder"></div>
+
+        <div class="row g-4">
+          <div class="col-lg-6">
+            <div class="portal-card h-100">
+              <h5 class="fw-bold mb-3"><i class="bi bi-sliders text-primary me-2"></i>Notification &amp; Display Preferences</h5>
+
+              <div class="form-check form-switch py-2 border-bottom d-flex justify-content-between align-items-center ps-0">
+                <div>
+                  <label class="form-check-label fw-semibold" for="prefEmailNotif">Email Alerts for Exam Schedules</label>
+                  <div class="text-muted small">Receive instant emails when exam dates are published</div>
+                </div>
+                <input class="form-check-input ms-3" type="checkbox" id="prefEmailNotif" checked style="width: 2.6em; height: 1.3em;" />
+              </div>
+
+              <div class="form-check form-switch py-2 border-bottom d-flex justify-content-between align-items-center ps-0">
+                <div>
+                  <label class="form-check-label fw-semibold" for="prefAttendanceWarn">Low Attendance Threshold Warnings</label>
+                  <div class="text-muted small">Alert me if any subject drops below 78%</div>
+                </div>
+                <input class="form-check-input ms-3" type="checkbox" id="prefAttendanceWarn" checked style="width: 2.6em; height: 1.3em;" />
+              </div>
+
+              <div class="form-check form-switch py-2 d-flex justify-content-between align-items-center ps-0">
+                <div>
+                  <label class="form-check-label fw-semibold" for="prefCompactMode">Compact Dashboard Layout</label>
+                  <div class="text-muted small">Reduce card padding for higher information density</div>
+                </div>
+                <input class="form-check-input ms-3" type="checkbox" id="prefCompactMode" style="width: 2.6em; height: 1.3em;" />
+              </div>
+
+              <button class="btn btn-brand mt-4" onclick="savePreferences()">
+                <i class="bi bi-check-circle me-1"></i> Save Preferences
+              </button>
+            </div>
+          </div>
+
+          <div class="col-lg-6">
+            <div class="portal-card h-100">
+              <h5 class="fw-bold mb-3"><i class="bi bi-shield-lock text-primary me-2"></i>Change Portal Password</h5>
+              <form id="changePasswordForm" onsubmit="handlePasswordUpdate(event)">
+                <div class="mb-3">
+                  <label class="form-label small fw-semibold">Current Password</label>
+                  <input type="password" class="form-control rounded-3" required placeholder="••••••••" />
+                </div>
+                <div class="mb-3">
+                  <label class="form-label small fw-semibold">New Password</label>
+                  <input type="password" id="newPwdInput" class="form-control rounded-3" required minlength="6" placeholder="Minimum 6 characters" />
+                </div>
+                <div class="mb-3">
+                  <label class="form-label small fw-semibold">Confirm New Password</label>
+                  <input type="password" id="confirmPwdInput" class="form-control rounded-3" required minlength="6" placeholder="Re-enter new password" />
+                </div>
+                <button type="submit" class="btn btn-primary rounded-3 fw-semibold">
+                  Update Password
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-top py-3 px-4 mt-auto text-center text-md-start d-flex flex-wrap justify-content-between align-items-center small text-muted">
+      <div>&copy; 2026 <strong>Smart Student Portal</strong> • National Institute of Technology. All rights reserved.</div>
+      <div>Academic ERP v4.2 • Powered by Student Information Services</div>
+    </footer>
+  </div>
+
+  <!-- =========================================================
+       MODALS (Edit Profile, Study Material, Notification/Notice Detail, Logout)
+       ========================================================= -->
+
+  <!-- Edit Profile Modal -->
+  <div class="modal fade" id="editProfileModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-4 border-0 shadow">
+        <div class="modal-header bg-brand-gradient text-white rounded-top-4">
+          <h5 class="modal-title fw-bold"><i class="bi bi-person-gear me-2"></i>Edit Student Profile</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <form id="editProfileForm" onsubmit="saveProfileChanges(event)">
+          <div class="modal-body p-4">
+            <div class="mb-3">
+              <label class="form-label small fw-semibold">Full Name</label>
+              <input type="text" id="editNameInput" class="form-control rounded-3" value="Arjun Sharma" required />
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-semibold">Official Email</label>
+              <input type="email" id="editEmailInput" class="form-control rounded-3" value="arjun.sharma@nit-portal.edu.in" required />
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-semibold">Mobile Number</label>
+              <input type="text" id="editPhoneInput" class="form-control rounded-3" value="+91 98765 43210" required />
+            </div>
+            <div class="mb-0">
+              <label class="form-label small fw-semibold">Year &amp; Semester</label>
+              <input type="text" id="editYearSemInput" class="form-control rounded-3" value="3rd Year / 5th Semester" required />
+            </div>
+          </div>
+          <div class="modal-footer border-0 pt-0 px-4 pb-4">
+            <button type="button" class="btn btn-light rounded-3" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-brand">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Universal Detail / Study Material Modal -->
+  <div class="modal fade" id="detailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-4 border-0 shadow">
+        <div class="modal-header border-bottom">
+          <h5 id="detailModalTitle" class="modal-title fw-bold">Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div id="detailModalBody" class="modal-body p-4"></div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-brand" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Logout Confirmation Modal -->
+  <div class="modal fade" id="logoutModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="modal-content rounded-4 border-0 shadow text-center p-3">
+        <div class="modal-body">
+          <div class="mx-auto mb-3 rounded-circle bg-danger-subtle text-danger d-flex align-items-center justify-content-center" style="width: 56px; height: 56px;">
+            <i class="bi bi-box-arrow-right fs-4"></i>
+          </div>
+          <h5 class="fw-bold mb-1">Confirm Logout</h5>
+          <p class="text-muted small mb-4">Are you sure you want to end your current Smart Student Portal session?</p>
+          <div class="d-flex gap-2 justify-content-center">
+            <button type="button" class="btn btn-light rounded-3 px-3" data-bs-dismiss="modal">Stay Logged In</button>
+            <button type="button" class="btn btn-danger rounded-3 px-3" onclick="executeLogout()">Logout</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap 5 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+
+  <script>
+    /* ==========================================================================
+       1. SAMPLE ACADEMIC DATA (B.Tech 5th Semester - Arjun Sharma)
+       ========================================================================== */
+    const subjectsData = [
+      {
+        code: "CS301",
+        name: "Design & Analysis of Algorithms",
+        short: "DAA",
+        credits: 4,
+        faculty: "Dr. Rajeshwar Rao",
+        room: "LH-204",
+        attended: 42,
+        totalClasses: 46,
+        internal: 27,
+        assignment: 19,
+        exam: 43,
+        grade: "O",
+        materials: ["Unit 1-5 Complete Lecture Notes", "Greedy & Dynamic Programming Sheet", "2023-2025 Solved Question Bank"]
+      },
+      {
+        code: "CS302",
+        name: "Operating Systems",
+        short: "OS",
+        credits: 4,
+        faculty: "Prof. Kavitha Nair",
+        room: "LH-201",
+        attended: 40,
+        totalClasses: 45,
+        internal: 26,
+        assignment: 18,
+        exam: 41,
+        grade: "A+",
+        materials: ["Process Scheduling & Deadlocks PDF", "Linux Kernel Lab Manual", "Mid-Sem & End-Sem Practice Papers"]
+      },
+      {
+        code: "CS303",
+        name: "Database Management Systems",
+        short: "DBMS",
+        credits: 4,
+        faculty: "Dr. Vikramaditya Sen",
+        room: "LH-105",
+        attended: 41,
+        totalClasses: 47,
+        internal: 28,
+        assignment: 19,
+        exam: 44,
+        grade: "O",
+        materials: ["Normalization & SQL Query Guide", "Transaction Concurrency Slides", "ER Modeling Case Studies"]
+      },
+      {
+        code: "CS304",
+        name: "Computer Networks",
+        short: "CN",
+        credits: 4,
+        faculty: "Prof. Ananya Deshmukh",
+        room: "LH-302",
+        attended: 32,
+        totalClasses: 44,
+        internal: 23,
+        assignment: 16,
+        exam: 37,
+        grade: "A",
+        materials: ["TCP/IP & Routing Protocols Notes", "Wireshark Packet Lab Guide", "Subnetting Practice Workbook"]
+      },
+      {
+        code: "CS305",
+        name: "Machine Learning Fundamentals",
+        short: "ML",
+        credits: 3,
+        faculty: "Dr. Siddharth Verma",
+        room: "AI-Lab 2",
+        attended: 43,
+        totalClasses: 47,
+        internal: 27,
+        assignment: 18,
+        exam: 40,
+        grade: "A+",
+        materials: ["Supervised & Unsupervised Learning PDF", "Scikit-Learn Jupyter Notebooks", "Linear Algebra Refresher"]
+      },
+      {
+        code: "CS306",
+        name: "Software Engineering",
+        short: "SE",
+        credits: 3,
+        faculty: "Prof. Meera Krishnan",
+        room: "LH-108",
+        attended: 40,
+        totalClasses: 46,
+        internal: 25,
+        assignment: 17,
+        exam: 37,
+        grade: "A",
+        materials: ["Agile & Scrum Methodology Handbook", "UML Diagrams Reference", "Software Testing Templates"]
+      }
+    ];
+
+    const weeklyTimetable = {
+      Monday: [
+        { time: "09:00 - 10:00", code: "CS301", subject: "DAA", room: "LH-204", faculty: "Dr. R. Rao" },
+        { time: "10:00 - 11:00", code: "CS302", subject: "Operating Systems", room: "LH-201", faculty: "Prof. K. Nair" },
+        { time: "11:15 - 12:15", code: "CS303", subject: "DBMS", room: "LH-105", faculty: "Dr. V. Sen" },
+        { time: "12:15 - 01:15", code: "CS304", subject: "Computer Networks", room: "LH-302", faculty: "Prof. A. Deshmukh" },
+        { time: "02:00 - 04:00", code: "CS302L", subject: "OS Kernel Lab", room: "Sys-Lab 1", faculty: "Prof. K. Nair" }
+      ],
+      Tuesday: [
+        { time: "09:00 - 10:00", code: "CS305", subject: "Machine Learning", room: "AI-Lab 2", faculty: "Dr. S. Verma" },
+        { time: "10:00 - 11:00", code: "CS301", subject: "DAA", room: "LH-204", faculty: "Dr. R. Rao" },
+        { time: "11:15 - 12:15", code: "CS306", subject: "Software Engg.", room: "LH-108", faculty: "Prof. M. Krishnan" },
+        { time: "12:15 - 01:15", code: "CS303", subject: "DBMS", room: "LH-105", faculty: "Dr. V. Sen" },
+        { time: "02:00 - 04:00", code: "CS303L", subject: "SQL & DBMS Lab", room: "DB-Lab 3", faculty: "Dr. V. Sen" }
+      ],
+      Wednesday: [
+        { time: "09:00 - 10:00", code: "CS304", subject: "Computer Networks", room: "LH-302", faculty: "Prof. A. Deshmukh" },
+        { time: "10:00 - 11:00", code: "CS305", subject: "Machine Learning", room: "AI-Lab 2", faculty: "Dr. S. Verma" },
+        { time: "11:15 - 12:15", code: "CS302", subject: "Operating Systems", room: "LH-201", faculty: "Prof. K. Nair" },
+        { time: "12:15 - 01:15", code: "CS301", subject: "DAA Tutorial", room: "LH-204", faculty: "Dr. R. Rao" },
+        { time: "02:00 - 04:00", code: "CS305L", subject: "Python & ML Lab", room: "AI-Lab 2", faculty: "Dr. S. Verma" }
+      ],
+      Thursday: [
+        { time: "09:00 - 10:00", code: "CS303", subject: "DBMS", room: "LH-105", faculty: "Dr. V. Sen" },
+        { time: "10:00 - 11:00", code: "CS306", subject: "Software Engg.", room: "LH-108", faculty: "Prof. M. Krishnan" },
+        { time: "11:15 - 12:15", code: "CS304", subject: "Computer Networks", room: "LH-302", faculty: "Prof. A. Deshmukh" },
+        { time: "12:15 - 01:15", code: "CS302", subject: "Operating Systems", room: "LH-201", faculty: "Prof. K. Nair" },
+        { time: "02:00 - 04:00", code: "CS304L", subject: "Networks & Socket Lab", room: "Net-Lab 1", faculty: "Prof. A. Deshmukh" }
+      ],
+      Friday: [
+        { time: "09:00 - 10:00", code: "CS301", subject: "DAA", room: "LH-204", faculty: "Dr. R. Rao" },
+        { time: "10:00 - 11:00", code: "CS303", subject: "DBMS", room: "LH-105", faculty: "Dr. V. Sen" },
+        { time: "11:15 - 12:15", code: "CS305", subject: "Machine Learning", room: "AI-Lab 2", faculty: "Dr. S. Verma" },
+        { time: "12:15 - 01:15", code: "CS306", subject: "Software Engg.", room: "LH-108", faculty: "Prof. M. Krishnan" },
+        { time: "02:00 - 04:00", code: "PROJ", subject: "Mini Project Review", room: "Innovation Hub", faculty: "Panel Faculty" }
+      ],
+      Saturday: [
+        { time: "09:00 - 10:00", code: "APT301", subject: "Placement Aptitude", room: "Auditorium B", faculty: "T&P Cell" },
+        { time: "10:00 - 11:00", code: "CS306", subject: "SE Case Study", room: "LH-108", faculty: "Prof. M. Krishnan" },
+        { time: "11:15 - 12:15", code: "CLUB", subject: "Coding Club / Seminar", room: "Seminar Hall", faculty: "IEEE Student Branch" },
+        { time: "12:15 - 01:15", code: "LIB", subject: "Digital Library Hour", room: "Central Library", faculty: "Self Study" },
+        { time: "02:00 - 04:00", code: "SPORTS", subject: "NSS / Sports Activity", room: "Campus Ground", faculty: "Sports Dept." }
+      ]
+    };
+
+    let notificationsData = [
+      {
+        id: 1,
+        category: "Attendance Alert",
+        title: "Low Attendance Warning: Computer Networks (CS304)",
+        message: "Your current attendance in CS304 is 72.7% (32/44 classes), which is slightly below the mandatory 75% requirement. Please attend the next 3 consecutive lectures to restore safe standing.",
+        date: "Nov 24, 2026 • 10:15 AM",
+        unread: true,
+        badgeClass: "bg-danger-subtle text-danger"
+      },
+      {
+        id: 2,
+        category: "Exam Reminder",
+        title: "End-Semester Examination Hall Ticket Released",
+        message: "Hall tickets for B.Tech 5th Semester End-Semester Theory Examinations (starting December 12, 2026) are now available for download from the Examination Cell portal.",
+        date: "Nov 23, 2026 • 04:30 PM",
+        unread: true,
+        badgeClass: "bg-primary-subtle text-primary"
+      },
+      {
+        id: 3,
+        category: "Assignment Deadline",
+        title: "ML Mini-Project & Lab Record Submission Due",
+        message: "Dr. Siddharth Verma has scheduled the final evaluation for CS305 Machine Learning Jupyter Notebooks on November 28, 2026 at 02:00 PM in AI-Lab 2.",
+        date: "Nov 22, 2026 • 11:00 AM",
+        unread: true,
+        badgeClass: "bg-warning-subtle text-warning-emphasis"
+      },
+      {
+        id: 4,
+        category: "Exam Reminder",
+        title: "DBMS Practical Viva-Voce Schedule Announced",
+        message: "CS303 Database Management Systems lab viva for Roll Numbers 23CS1001 to 23CS1060 will be conducted on December 3, 2026 in DB-Lab 3.",
+        date: "Nov 20, 2026 • 02:45 PM",
+        unread: true,
+        badgeClass: "bg-primary-subtle text-primary"
+      },
+      {
+        id: 5,
+        category: "Assignment Deadline",
+        title: "DAA Dynamic Programming Assignment Graded",
+        message: "Your submission for Assignment #3 in CS301 Design & Analysis of Algorithms has been evaluated. Score awarded: 19 / 20.",
+        date: "Nov 18, 2026 • 05:10 PM",
+        unread: false,
+        badgeClass: "bg-success-subtle text-success"
+      }
+    ];
+
+    const announcementsData = [
+      {
+        id: 101,
+        category: "Workshop",
+        title: "Hands-On Generative AI & LLM Fine-Tuning Bootcamp",
+        date: "Nov 29, 2026",
+        organizer: "Department of CSE & Google Developer Student Club",
+        venue: "Main Auditorium, Academic Block A",
+        summary: "A full-day practical workshop covering transformer architectures, RAG pipelines, and deploying open-source LLMs with Python.",
+        details: "All 3rd and 4th-year B.Tech students are invited to participate in this intensive hands-on bootcamp. Bring your laptops with Python 3.11+ pre-installed. Participation certificates will be awarded to all attendees."
+      },
+      {
+        id: 102,
+        category: "Cultural Event",
+        title: "TECHNOVANZA & KALAKRITI 2026 — Annual Techno-Cultural Fest",
+        date: "Dec 04 – Dec 06, 2026",
+        organizer: "Student Cultural Council",
+        venue: "Open Air Theatre & Campus Grounds",
+        summary: "Three days of hackathons, robotics battles, battle of bands, classical dance, and celebrity pro-shows.",
+        details: "Registrations are now open for over 40 technical and cultural events! Form your teams for the 24-hour Smart Campus Hackathon with prizes worth ₹1,50,000."
+      },
+      {
+        id: 103,
+        category: "Examination Update",
+        title: "Final Timetable for Odd Semester End Examinations (Dec 2026)",
+        date: "Nov 21, 2026",
+        organizer: "Office of the Controller of Examinations",
+        venue: "Examination Blocks A, B & C",
+        summary: "End-semester examinations will commence on December 12, 2026. Reporting time is 30 minutes prior to the exam.",
+        details: "Students must carry their valid University ID Card and signed Hall Ticket. Programmable calculators and smartwatches are strictly prohibited inside the examination halls."
+      },
+      {
+        id: 104,
+        category: "Seminar",
+        title: "Industry Expert Talk: Cloud-Native Microservices at Scale",
+        date: "Nov 27, 2026",
+        organizer: "Training & Placement Cell",
+        venue: "Senate Seminar Hall",
+        summary: "Keynote session by Principal Cloud Architect from Bengaluru on Kubernetes, distributed tracing, and internship readiness.",
+        details: "Followed by a live Q&A session regarding Summer 2027 Software Engineering Internship interviews and resume shortlisting tips."
+      },
+      {
+        id: 105,
+        category: "Holiday",
+        title: "Campus Holiday Notice — Regional Foundation Day",
+        date: "Nov 30, 2026",
+        organizer: "Registrar Office",
+        venue: "University Campus",
+        summary: "All academic classes and administrative offices will remain closed on November 30, 2026. Central Library remains open till 8 PM.",
+        details: "Regular classes will resume on Tuesday, December 1, 2026 as per the standard timetable."
+      }
+    ];
+
+    /* ==========================================================================
+       2. NAVIGATION & SIDEBAR CONTROLS
+       ========================================================================== */
+    const sidebar = document.getElementById("sidebar");
+    const sidebarBackdrop = document.getElementById("sidebarBackdrop");
+    const navButtons = document.querySelectorAll(".sidebar-link[data-target]");
+    const sections = document.querySelectorAll(".content-section");
+
+    function navigateTo(targetId) {
+      // Update active button in sidebar
+      navButtons.forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.target === targetId);
+      });
+
+      // Switch visible section
+      sections.forEach((sec) => {
+        sec.classList.toggle("active", sec.id === `section-${targetId}`);
+      });
+
+      // Close mobile sidebar if open
+      closeMobileSidebar();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    navButtons.forEach((btn) => {
+      btn.addEventListener("click", () => navigateTo(btn.dataset.target));
+    });
+
+    function openMobileSidebar() {
+      sidebar.classList.add("open");
+      sidebarBackdrop.classList.add("show");
+    }
+
+    function closeMobileSidebar() {
+      sidebar.classList.remove("open");
+      sidebarBackdrop.classList.remove("show");
+    }
+
+    document.getElementById("openSidebarBtn").addEventListener("click", openMobileSidebar);
+    document.getElementById("closeSidebarBtn").addEventListener("click", closeMobileSidebar);
+    sidebarBackdrop.addEventListener("click", closeMobileSidebar);
+
+    /* ==========================================================================
+       3. RENDER FUNCTIONS FOR ALL SECTIONS
+       ========================================================================== */
+
+    // Render Today's Schedule Widget on Dashboard
+    function renderDashboardTodaySchedule() {
+      const todaySchedule = weeklyTimetable["Tuesday"];
+      const container = document.getElementById("dashboardTodaySchedule");
+      container.innerHTML = todaySchedule
+        .map(
+          (slot) => `
+          <div class="d-flex align-items-center justify-content-between p-2.5 px-3 rounded-3 bg-light border">
+            <div>
+              <div class="fw-bold small text-dark">${slot.subject} <span class="badge bg-primary-subtle text-primary ms-1">${slot.code}</span></div>
+              <div class="text-muted" style="font-size: 0.75rem;"><i class="bi bi-geo-alt me-1"></i>${slot.room} • ${slot.faculty}</div>
+            </div>
+            <span class="badge bg-white text-dark border fw-semibold">${slot.time}</span>
+          </div>
+        `
+        )
+        .join("");
+    }
+
+    // Render Attendance Section
+    function renderAttendance(filter = "all") {
+      const container = document.getElementById("attendanceCardsContainer");
+      const filtered = subjectsData.filter((sub) => {
+        const pct = (sub.attended / sub.totalClasses) * 100;
+        if (filter === "safe") return pct >= 75;
+        if (filter === "low") return pct < 75;
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="col-12"><div class="portal-card text-center text-muted py-4">No subjects match this filter.</div></div>`;
+        return;
+      }
+
+      container.innerHTML = filtered
+        .map((sub) => {
+          const pct = ((sub.attended / sub.totalClasses) * 100).toFixed(1);
+          const absent = sub.totalClasses - sub.attended;
+          let barColor = "bg-success";
+          let statusBadge = `<span class="badge bg-success-subtle text-success">Excellent (&ge;85%)</span>`;
+
+          if (pct < 75) {
+            barColor = "bg-danger";
+            statusBadge = `<span class="badge bg-danger-subtle text-danger"><i class="bi bi-exclamation-triangle-fill me-1"></i>Shortage (&lt;75%)</span>`;
+          } else if (pct < 85) {
+            barColor = "bg-primary";
+            statusBadge = `<span class="badge bg-primary-subtle text-primary">Good Standing</span>`;
+          }
+
+          return `
+            <div class="col-md-6 col-xl-4">
+              <div class="portal-card h-100">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <div>
+                    <span class="badge bg-light text-dark border mb-1">${sub.code}</span>
+                    <h6 class="fw-bold mb-0">${sub.name}</h6>
+                  </div>
+                  ${statusBadge}
+                </div>
+                <div class="small text-muted mb-3"><i class="bi bi-person me-1"></i>${sub.faculty}</div>
+
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <span class="small fw-semibold text-muted">Attendance Percentage</span>
+                  <span class="fw-bold fs-5 ${pct < 75 ? 'text-danger' : 'text-dark'}">${pct}%</span>
+                </div>
+                <div class="progress progress-modern mb-3">
+                  <div class="progress-bar ${barColor}" role="progressbar" style="width: ${pct}%" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+
+                <div class="d-flex justify-content-between text-center pt-2 border-top small">
+                  <div>
+                    <div class="fw-bold text-dark">${sub.totalClasses}</div>
+                    <div class="text-muted">Total</div>
+                  </div>
+                  <div>
+                    <div class="fw-bold text-success">${sub.attended}</div>
+                    <div class="text-muted">Present</div>
+                  </div>
+                  <div>
+                    <div class="fw-bold text-danger">${absent}</div>
+                    <div class="text-muted">Absent</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+        })
+        .join("");
+    }
+
+    function filterAttendance(type, btn) {
+      btn.parentElement.querySelectorAll(".btn").forEach((b) => {
+        b.classList.remove("btn-primary", "btn-danger", "active");
+        if (b.textContent.includes("Shortage")) b.classList.add("btn-outline-danger");
+        else b.classList.add("btn-outline-primary");
+      });
+      btn.classList.remove("btn-outline-primary", "btn-outline-danger");
+      btn.classList.add(type === "low" ? "btn-danger" : "btn-primary", "active");
+      renderAttendance(type);
+    }
+
+    // Render Marks Table
+    function renderMarksTable() {
+      const tbody = document.getElementById("marksTableBody");
+      tbody.innerHTML = subjectsData
+        .map((sub) => {
+          const total = sub.internal + sub.assignment + sub.exam;
+          const gradeColor = sub.grade === "O" ? "bg-success" : sub.grade === "A+" ? "bg-primary" : "bg-info text-dark";
+          return `
+            <tr>
+              <td class="fw-bold text-primary">${sub.code}</td>
+              <td class="fw-semibold">${sub.name}</td>
+              <td class="text-center">${sub.internal} / 30</td>
+              <td class="text-center">${sub.assignment} / 20</td>
+              <td class="text-center">${sub.exam} / 50</td>
+              <td class="text-center fw-bold">${total} / 100</td>
+              <td class="text-center fw-semibold text-success">${total}%</td>
+              <td class="text-center"><span class="badge ${gradeColor} px-2.5 py-1 rounded-pill">${sub.grade}</span></td>
+            </tr>
+          `;
+        })
+        .join("");
+    }
+
+    // Render Weekly Timetable
+    function renderTimetable(highlightDay = "Tuesday") {
+      const tbody = document.getElementById("timetableBody");
+      const days = Object.keys(weeklyTimetable);
+
+      tbody.innerHTML = days
+        .map((day) => {
+          const isToday = day === highlightDay;
+          const slotsHtml = weeklyTimetable[day]
+            .map(
+              (s) => `
+              <td>
+                <div class="timetable-slot">
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="badge bg-primary-subtle text-primary" style="font-size: 0.68rem;">${s.code}</span>
+                    <span class="text-muted fw-semibold" style="font-size: 0.68rem;">${s.room}</span>
+                  </div>
+                  <div class="fw-bold small text-dark lh-sm">${s.subject}</div>
+                  <div class="text-muted mt-1" style="font-size: 0.7rem;">${s.faculty}</div>
+                </div>
+              </td>
+            `
+            )
+            .join("");
+
+          return `
+            <tr class="${isToday ? "timetable-row-today" : ""}">
+              <td class="fw-bold">
+                ${day}
+                ${isToday ? '<span class="d-block badge bg-brand-gradient text-white mt-1" style="font-size:0.65rem;">Active Day</span>' : ""}
+              </td>
+              ${slotsHtml}
+            </tr>
+          `;
+        })
+        .join("");
+    }
+
+    document.getElementById("timetableDaySelect").value = "Tuesday";
+    document.getElementById("timetableDaySelect").addEventListener("change", (e) => {
+      renderTimetable(e.target.value);
+    });
+
+    // Render My Subjects Cards
+    function renderSubjects() {
+      const container = document.getElementById("subjectsGridContainer");
+      container.innerHTML = subjectsData
+        .map(
+          (sub, idx) => `
+          <div class="col-md-6 col-xl-4">
+            <div class="portal-card h-100 d-flex flex-column">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="badge bg-brand-gradient text-white px-3 py-1.5 rounded-pill">${sub.code}</span>
+                <span class="badge bg-light text-dark border">${sub.credits} Credits</span>
+              </div>
+              <h5 class="fw-bold mb-1">${sub.name}</h5>
+              <p class="text-muted small mb-3"><i class="bi bi-person-workspace text-primary me-1"></i>${sub.faculty} • Room ${sub.room}</p>
+
+              <div class="mt-auto pt-3 border-top">
+                <div class="small fw-semibold text-muted mb-2">Study Resources:</div>
+                <div class="d-flex flex-wrap gap-2">
+                  <button class="btn btn-sm btn-outline-primary rounded-3" onclick="openMaterialModal(${idx}, 0)">
+                    <i class="bi bi-file-earmark-pdf me-1"></i>Notes
+                  </button>
+                  <button class="btn btn-sm btn-outline-secondary rounded-3" onclick="openMaterialModal(${idx}, 1)">
+                    <i class="bi bi-journal-code me-1"></i>Lab / Guide
+                  </button>
+                  <button class="btn btn-sm btn-light border rounded-3" onclick="openMaterialModal(${idx}, 2)">
+                    <i class="bi bi-collection me-1"></i>Question Bank
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `
+        )
+        .join("");
+    }
+
+    function openMaterialModal(subjectIndex, materialIndex) {
+      const sub = subjectsData[subjectIndex];
+      const matTitle = sub.materials[materialIndex];
+      document.getElementById("detailModalTitle").innerHTML = `<i class="bi bi-folder2-open text-primary me-2"></i>${sub.code} Study Material`;
+      document.getElementById("detailModalBody").innerHTML = `
+        <div class="p-3 rounded-4 bg-brand-soft border border-primary-subtle mb-3">
+          <div class="fw-bold text-dark">${matTitle}</div>
+          <small class="text-muted">Subject: ${sub.name} • Faculty: ${sub.faculty}</small>
+        </div>
+        <p class="small text-muted mb-3">
+          This verified academic resource is curated for 5th Semester B.Tech CSE students. Includes unit-wise summaries, solved numerical problems, and university syllabus checkpoints.
+        </p>
+        <div class="d-flex justify-content-between align-items-center p-2.5 px-3 rounded-3 bg-light border small">
+          <span><i class="bi bi-file-pdf-fill text-danger me-2"></i>${sub.code}_Resource_2026.pdf (2.4 MB)</span>
+          <span class="badge bg-success">Ready</span>
+        </div>
+      `;
+      new bootstrap.Modal(document.getElementById("detailModal")).show();
+    }
+
+    // Render Notifications (Main Section, Dashboard Widget, and Header Dropdown)
+    let activeNotifFilter = "all";
+
+    function renderNotifications() {
+      const unreadCount = notificationsData.filter((n) => n.unread).length;
+      document.getElementById("sidebarNotifBadge").textContent = unreadCount;
+      document.getElementById("headerNotifBadge").textContent = unreadCount;
+      document.getElementById("sidebarNotifBadge").style.display = unreadCount > 0 ? "inline-block" : "none";
+      document.getElementById("headerNotifBadge").style.display = unreadCount > 0 ? "inline-block" : "none";
+
+      // 1. Header Dropdown List
+      const headerList = document.getElementById("headerNotifList");
+      headerList.innerHTML = notificationsData
+        .slice(0, 4)
+        .map(
+          (n) => `
+          <div class="p-2.5 rounded-3 mb-1 ${n.unread ? "bg-brand-soft" : ""}" style="cursor:pointer;" onclick="openNotificationDetail(${n.id})">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <span class="badge ${n.badgeClass}" style="font-size: 0.65rem;">${n.category}</span>
+              ${n.unread ? '<span class="badge bg-primary rounded-circle p-1"> </span>' : ""}
+            </div>
+            <div class="fw-semibold small text-dark lh-sm">${n.title}</div>
+            <div class="text-muted mt-1" style="font-size: 0.7rem;">${n.date}</div>
+          </div>
+        `
+        )
+        .join("");
+
+      // 2. Dashboard Recent Notifications Widget
+      const dashRecent = document.getElementById("dashboardRecentNotifs");
+      dashRecent.innerHTML = notificationsData
+        .slice(0, 3)
+        .map(
+          (n) => `
+          <div class="p-2.5 px-3 rounded-3 border ${n.unread ? "bg-brand-soft border-primary-subtle" : "bg-light"}" style="cursor:pointer;" onclick="openNotificationDetail(${n.id})">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <span class="badge ${n.badgeClass}" style="font-size: 0.68rem;">${n.category}</span>
+              <small class="text-muted" style="font-size: 0.7rem;">${n.date.split("•")[0]}</small>
+            </div>
+            <div class="fw-semibold small text-dark">${n.title}</div>
+          </div>
+        `
+        )
+        .join("");
+
+      // 3. Full Notifications Section
+      const container = document.getElementById("notificationsListContainer");
+      const filtered = notificationsData.filter((n) => activeNotifFilter === "all" || n.category === activeNotifFilter);
+
+      container.innerHTML = filtered
+        .map(
+          (n) => `
+          <div class="notif-item ${n.unread ? "unread" : ""}" onclick="openNotificationDetail(${n.id})">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-1">
+              <div class="d-flex align-items-center gap-2">
+                <span class="badge ${n.badgeClass} rounded-pill">${n.category}</span>
+                ${n.unread ? '<span class="badge bg-primary rounded-pill">New</span>' : '<span class="badge bg-light text-muted border rounded-pill">Read</span>'}
+              </div>
+              <small class="text-muted"><i class="bi bi-clock me-1"></i>${n.date}</small>
+            </div>
+            <h6 class="fw-bold mb-1 text-dark">${n.title}</h6>
+            <p class="text-muted small mb-0">${n.message}</p>
+          </div>
+        `
+        )
+        .join("");
+    }
+
+    function openNotificationDetail(id) {
+      const notif = notificationsData.find((n) => n.id === id);
+      if (!notif) return;
+      notif.unread = false;
+      renderNotifications();
+
+      document.getElementById("detailModalTitle").innerHTML = `<span class="badge ${notif.badgeClass} me-2">${notif.category}</span>Notification`;
+      document.getElementById("detailModalBody").innerHTML = `
+        <h5 class="fw-bold mb-2">${notif.title}</h5>
+        <div class="text-muted small mb-3"><i class="bi bi-calendar-event me-1"></i>${notif.date}</div>
+        <p class="mb-0 text-dark">${notif.message}</p>
+      `;
+      new bootstrap.Modal(document.getElementById("detailModal")).show();
+    }
+
+    function markAllNotificationsRead() {
+      notificationsData.forEach((n) => (n.unread = false));
+      renderNotifications();
+    }
+
+    function filterNotifications(category, btn) {
+      activeNotifFilter = category;
+      btn.parentElement.querySelectorAll(".btn").forEach((b) => {
+        b.classList.remove("btn-primary", "active");
+        b.classList.add("btn-outline-primary");
+      });
+      btn.classList.remove("btn-outline-primary");
+      btn.classList.add("btn-primary", "active");
+      renderNotifications();
+    }
+
+    // Render Announcements Section
+    function renderAnnouncements(filter = "all") {
+      const container = document.getElementById("announcementsGridContainer");
+      const filtered = announcementsData.filter((a) => filter === "all" || a.category === filter);
+
+      container.innerHTML = filtered
+        .map(
+          (a) => `
+          <div class="col-md-6">
+            <div class="portal-card h-100 d-flex flex-column">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="badge bg-primary-subtle text-primary rounded-pill px-3">${a.category}</span>
+                <small class="text-muted fw-semibold"><i class="bi bi-calendar3 me-1"></i>${a.date}</small>
+              </div>
+              <h5 class="fw-bold mb-2">${a.title}</h5>
+              <p class="text-muted small mb-3">${a.summary}</p>
+              <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center">
+                <small class="text-muted"><i class="bi bi-building me-1"></i>${a.organizer}</small>
+                <button class="btn btn-sm btn-brand" onclick="openAnnouncementModal(${a.id})">Read Circular</button>
+              </div>
+            </div>
+          </div>
+        `
+        )
+        .join("");
+    }
+
+    function filterAnnouncements(category, btn) {
+      document.querySelectorAll("#announcementFilters .btn").forEach((b) => {
+        b.classList.remove("btn-primary", "active");
+        b.classList.add("btn-outline-primary");
+      });
+      btn.classList.remove("btn-outline-primary");
+      btn.classList.add("btn-primary", "active");
+      renderAnnouncements(category);
+    }
+
+    function openAnnouncementModal(id) {
+      const item = announcementsData.find((a) => a.id === id);
+      if (!item) return;
+      document.getElementById("detailModalTitle").innerHTML = `<i class="bi bi-megaphone-fill text-primary me-2"></i>${item.category}`;
+      document.getElementById("detailModalBody").innerHTML = `
+        <h5 class="fw-bold mb-2">${item.title}</h5>
+        <div class="p-3 rounded-3 bg-light small mb-3">
+          <div><strong>Date:</strong> ${item.date}</div>
+          <div><strong>Venue:</strong> ${item.venue}</div>
+          <div><strong>Issued By:</strong> ${item.organizer}</div>
+        </div>
+        <p class="mb-0">${item.details}</p>
+      `;
+      new bootstrap.Modal(document.getElementById("detailModal")).show();
+    }
+
+    /* ==========================================================================
+       4. GLOBAL SEARCH BAR FUNCTIONALITY
+       ========================================================================== */
+    const globalSearchInput = document.getElementById("globalSearchInput");
+    const searchDropdown = document.getElementById("searchResultsDropdown");
+
+    globalSearchInput.addEventListener("input", (e) => {
+      const query = e.target.value.trim().toLowerCase();
+      if (!query) {
+        searchDropdown.classList.remove("show");
+        return;
+      }
+
+      const results = [];
+
+      subjectsData.forEach((s) => {
+        if (s.name.toLowerCase().includes(query) || s.code.toLowerCase().includes(query) || s.faculty.toLowerCase().includes(query)) {
+          results.push({
+            type: "Subject",
+            title: `${s.code}: ${s.name}`,
+            sub: `Faculty: ${s.faculty} • Room ${s.room}`,
+            action: () => navigateTo("subjects")
+          });
+        }
+      });
+
+      notificationsData.forEach((n) => {
+        if (n.title.toLowerCase().includes(query) || n.category.toLowerCase().includes(query)) {
+          results.push({
+            type: "Notification",
+            title: n.title,
+            sub: n.date,
+            action: () => {
+              navigateTo("notifications");
+              openNotificationDetail(n.id);
+            }
+          });
+        }
+      });
+
+      announcementsData.forEach((a) => {
+        if (a.title.toLowerCase().includes(query) || a.category.toLowerCase().includes(query)) {
+          results.push({
+            type: "Announcement",
+            title: a.title,
+            sub: `${a.category} • ${a.date}`,
+            action: () => {
+              navigateTo("announcements");
+              openAnnouncementModal(a.id);
+            }
+          });
+        }
+      });
+
+      if (results.length === 0) {
+        searchDropdown.innerHTML = `<div class="p-3 text-center text-muted small">No matching subjects, notices, or alerts found.</div>`;
+      } else {
+        searchDropdown.innerHTML = results
+          .map(
+            (r, index) => `
+            <div class="search-result-item" data-idx="${index}">
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="fw-semibold small text-dark">${r.title}</span>
+                <span class="badge bg-primary-subtle text-primary" style="font-size:0.65rem;">${r.type}</span>
+              </div>
+              <div class="text-muted" style="font-size:0.75rem;">${r.sub}</div>
+            </div>
+          `
+          )
+          .join("");
+
+        searchDropdown.querySelectorAll(".search-result-item").forEach((el, idx) => {
+          el.addEventListener("click", () => {
+            results[idx].action();
+            searchDropdown.classList.remove("show");
+            globalSearchInput.value = "";
+          });
+        });
+      }
+
+      searchDropdown.classList.add("show");
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest(".search-wrapper")) {
+        searchDropdown.classList.remove("show");
+      }
+    });
+
+    /* ==========================================================================
+       5. PROFILE EDIT, SETTINGS & LOGOUT HANDLERS
+       ========================================================================== */
+    function saveProfileChanges(e) {
+      e.preventDefault();
+      const newName = document.getElementById("editNameInput").value.trim();
+      const newEmail = document.getElementById("editEmailInput").value.trim();
+      const newPhone = document.getElementById("editPhoneInput").value.trim();
+      const newYearSem = document.getElementById("editYearSemInput").value.trim();
+
+      document.getElementById("headerStudentName").textContent = newName;
+      document.getElementById("heroStudentName").textContent = newName;
+      document.getElementById("profNameDisplay").textContent = newName;
+      document.getElementById("profFullName").textContent = newName;
+      document.getElementById("profEmail").textContent = newEmail;
+      document.getElementById("profPhone").textContent = newPhone;
+      document.getElementById("profYearSem").textContent = newYearSem;
+
+      bootstrap.Modal.getInstance(document.getElementById("editProfileModal")).hide();
+    }
+
+    function savePreferences() {
+      const compact = document.getElementById("prefCompactMode").checked;
+      document.body.classList.toggle("compact-mode", compact);
+      showSettingsAlert("Portal preferences updated successfully!", "success");
+    }
+
+    function handlePasswordUpdate(e) {
+      e.preventDefault();
+      const p1 = document.getElementById("newPwdInput").value;
+      const p2 = document.getElementById("confirmPwdInput").value;
+      if (p1 !== p2) {
+        showSettingsAlert("New password and confirmation do not match.", "danger");
+        return;
+      }
+      e.target.reset();
+      showSettingsAlert("Your portal password has been changed securely.", "success");
+    }
+
+    function showSettingsAlert(msg, type) {
+      document.getElementById("settingsAlertPlaceholder").innerHTML = `
+        <div class="alert alert-${type} alert-dismissible fade show rounded-4" role="alert">
+          <i class="bi bi-info-circle-fill me-2"></i>${msg}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      `;
+    }
+
+    function executeLogout() {
+      bootstrap.Modal.getInstance(document.getElementById("logoutModal")).hide();
+      document.body.innerHTML = `
+        <div class="min-vh-100 d-flex align-items-center justify-content-center bg-light p-3">
+          <div class="portal-card text-center p-5" style="max-width: 440px;">
+            <div class="brand-logo-box mx-auto mb-3" style="width: 60px; height: 60px; font-size: 1.75rem;">
+              <i class="bi bi-mortarboard-fill"></i>
+            </div>
+            <h4 class="fw-bold mb-2">Signed Out Successfully</h4>
+            <p class="text-muted small mb-4">You have safely logged out of the Smart Student Portal. Thank you for visiting!</p>
+            <button class="btn btn-brand w-100" onclick="location.reload()">
+              <i class="bi bi-box-arrow-in-right me-1"></i> Sign Back In
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    /* ==========================================================================
+       6. INTERACTIVE CHART.JS INITIALIZATION
+       ========================================================================== */
+    function initCharts() {
+      const labels = subjectsData.map((s) => s.short);
+      const totals = subjectsData.map((s) => s.internal + s.assignment + s.exam);
+
+      // 1. Dashboard Subject Marks Bar Chart
+      new Chart(document.getElementById("dashboardMarksChart"), {
+        type: "bar",
+        data: {
+          labels,
+          datasets: [
+            {
+              label: "Total Score (%)",
+              data: totals,
+              backgroundColor: [
+                "rgba(37, 99, 235, 0.85)",
+                "rgba(124, 58, 237, 0.85)",
+                "rgba(37, 99, 235, 0.85)",
+                "rgba(99, 102, 241, 0.85)",
+                "rgba(124, 58, 237, 0.85)",
+                "rgba(59, 130, 246, 0.85)"
+              ],
+              borderRadius: 10,
+              maxBarThickness: 44
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              max: 100,
+              grid: { color: "#F1F5F9" }
+            },
+            x: {
+              grid: { display: false }
+            }
+          }
+        }
+      });
+
+      // 2. Dashboard Attendance Doughnut Chart
+      new Chart(document.getElementById("dashboardAttendanceChart"), {
+        type: "doughnut",
+        data: {
+          labels: ["Present", "Absent", "On-Duty Leave"],
+          datasets: [
+            {
+              data: [238, 31, 6],
+              backgroundColor: ["#2563EB", "#EF4444", "#7C3AED"],
+              borderWidth: 0,
+              hoverOffset: 6
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: "70%",
+          plugins: {
+            legend: {
+              position: "bottom",
+              labels: { boxWidth: 12, usePointStyle: true }
+            }
+          }
+        }
+      });
+
+      // 3. Marks Section Stacked Bar Chart
+      new Chart(document.getElementById("marksStackedChart"), {
+        type: "bar",
+        data: {
+          labels,
+          datasets: [
+            {
+              label: "Internal (30)",
+              data: subjectsData.map((s) => s.internal),
+              backgroundColor: "#2563EB",
+              borderRadius: 4
+            },
+            {
+              label: "Assignment (20)",
+              data: subjectsData.map((s) => s.assignment),
+              backgroundColor: "#7C3AED",
+              borderRadius: 4
+            },
+            {
+              label: "End Exam (50)",
+              data: subjectsData.map((s) => s.exam),
+              backgroundColor: "#10B981",
+              borderRadius: 4
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: { stacked: true, grid: { display: false } },
+            y: { stacked: true, max: 100, grid: { color: "#F1F5F9" } }
+          }
+        }
+      });
+
+      // 4. SGPA Trend Line Chart
+      new Chart(document.getElementById("sgpaTrendChart"), {
+        type: "line",
+        data: {
+          labels: ["Sem 1", "Sem 2", "Sem 3", "Sem 4", "Sem 5 (Current)"],
+          datasets: [
+            {
+              label: "SGPA",
+              data: [8.45, 8.68, 8.80, 8.95, 8.92],
+              borderColor: "#7C3AED",
+              backgroundColor: "rgba(124, 58, 237, 0.12)",
+              fill: true,
+              tension: 0.35,
+              pointBackgroundColor: "#2563EB",
+              pointRadius: 5
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: { min: 7.5, max: 10, grid: { color: "#F1F5F9" } },
+            x: { grid: { display: false } }
+          }
+        }
+      });
+    }
+
+    /* ==========================================================================
+       7. INITIALIZE PORTAL ON LOAD
+       ========================================================================== */
+    window.addEventListener("DOMContentLoaded", () => {
+      renderDashboardTodaySchedule();
+      renderAttendance("all");
+      renderMarksTable();
+      renderTimetable("Tuesday");
+      renderSubjects();
+      renderNotifications();
+      renderAnnouncements("all");
+      initCharts();
+    });
+  </script>
+</body>
+</html>
